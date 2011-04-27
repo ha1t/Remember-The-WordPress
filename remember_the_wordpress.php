@@ -29,13 +29,23 @@ define('RTW_UNIXTIME_PER_DAY', 86400);
 
 /* When Activate Plugin
 ==================================================================== */
+/* options table
+ * rtw_initialized: 期間計算のスタート時点
+ * rtw_terms:管理画面で指定された期間(unixtime)
+ * rtw_email:送信先E-mailアドレス
+ * rtw_subject:E-mailタイトル
+ * rtw_message:E-mail本文
+ * rtw_mail_type:メールタイプ(0:テキスト,1:HTML)
+ */
+
 function rtw_activate() {
 
-    $time = time();
-    $terms = 7; //default terms
-    $email = get_bloginfo('admin_email');
-    $subject = "Remember the WordPress!!";
-    $message = "Blogの更新が滞っているようです。サイトの更新をお願いします。";
+    $time      = time();
+    $terms     = 7; //default terms
+    $email     = get_bloginfo('admin_email');
+    $subject   = "Remember the WordPress!!";
+    $message   = "Blogの更新が滞っているようです。サイトの更新をお願いします。";
+    $mail_type = 0;
 
     if(!get_option('rtw_initialized') || get_option('rtw_initialized') !== $time) {
         update_option('rtw_initialized',$time);
@@ -52,15 +62,26 @@ function rtw_activate() {
     if(!get_option('rtw_message')) {
         update_option('rtw_message',$message);
     }
+    if(!get_option('rtw_mail_type')) {
+        update_option('rtw_mail_type', $mail_type);
+    }
     wp_schedule_event($time + RTW_UNIXTIME_PER_DAY, 'daily', 'rtw_cron');
 }
 register_activation_hook(__FILE__, 'rtw_activate');
 
 function get_latest_post_time() {
     global $wpdb;
-    $query = "SELECT post_date FROM ".$wpdb->posts."
-            WHERE post_status = 'publish' AND post_type = 'post'
-            ORDER BY `".$wpdb->posts."`.`post_date` DESC LIMIT 0,1";
+    $query = "SELECT "
+            ."post_date "
+          ."FROM "
+            .$wpdb->posts
+          ."WHERE "
+            ."post_status = 'publish' "
+          ."AND "
+            ."post_type = 'post'"
+          ."ORDER BY `".$wpdb->posts."`.`post_date` DESC "
+          ."LIMIT 0,1";
+    
     $query = $wpdb->prepare($query);
     return strtotime($wpdb->get_var($query));
     }
