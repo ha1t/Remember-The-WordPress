@@ -2,9 +2,9 @@
 function rtw_add_admin_page() {
     //blog charset from Options table
     $blog_charset = get_option('blog_charset', 'UTF-8');
+    $mail_type = get_option('rtw_mail_log');
 
     $posted = (isset($_POST['posted'])) ? TRUE : FALSE;
-
     if($posted) {
         //Validation
         if(preg_match('/[1-3][0-9]|[1-9]/',intval($_POST['terms']) AND intval($_POST['terms']) <= 30)){
@@ -12,6 +12,7 @@ function rtw_add_admin_page() {
             update_option('rtw_email',stripslashes($_POST['email']));
             update_option('rtw_subject',stripslashes($_POST['subject']));
             update_option('rtw_message',stripslashes($_POST['message']));
+            update_option('rtw_mail_log',stripslashes($_POST['message']));
             $rtw_error = FALSE;
         }else{
             $rtw_error = TRUE;
@@ -58,17 +59,9 @@ if($posted === TRUE AND $rtw_error === FALSE):?>
                             <label for="email">送信先E-mailアドレス<label>
                         </th>
                         <td>
-                            <input name="email" type="text" id="email" value="<?php echo esc_html(get_option('rtw_email')); ?>" class="regular-text code" /><br />
-                    アラートメールの送信先E-mailアドレスを入力してください。
-                        </td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row">
-                            <label for="terms">メールタイプ<label>
-                        </th>
-                        <td>
-                            <textarea name='message' id='message' cols='50' rows='10'><?php echo esc_html(get_option('rtw_message')); ?></textarea><br />
-                    送信メッセージの「内容」を入力してください。
+                            <textarea name="email" id="email" cols="20" rows="5"><?php echo esc_html(get_option('rtw_email')); ?></textarea><br />
+                    アラートメールの送信先E-mailアドレスを入力してください。<br />
+                    複数の送信先を設定することができます。
                         </td>
                     </tr>
                     <tr valign="top">
@@ -85,8 +78,19 @@ if($posted === TRUE AND $rtw_error === FALSE):?>
                             <label for="terms">メール本文<label>
                         </th>
                         <td>
-                            <textarea name='message' id='message' cols='50' rows='10'><?php echo esc_html(get_option('rtw_message'), ENT_QUOTES, $blog_charset); ?></textarea><br />
+                            <textarea name='message' id='message' cols='50' rows='10'><?php echo esc_html(get_option('rtw_message')); ?></textarea><br />
                     送信メッセージの「内容」を入力してください。
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">
+                            <label for="terms">メールログ<label>
+                        </th>
+                        <td>
+                            <option name="mail_type">
+                                <select value="0"<?php echo $log_mode === 0 ? 'selected' : '';?>>記録しない</select>
+                                <select value="1"<?php echo $log_mode === 1 ? 'selected' : '';?>>記録する</select>
+                            </option>
                         </td>
                     </tr>
                 </table>

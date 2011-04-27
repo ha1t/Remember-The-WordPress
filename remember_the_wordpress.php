@@ -35,7 +35,6 @@ define('RTW_UNIXTIME_PER_DAY', 86400);
  * rtw_email:送信先E-mailアドレス
  * rtw_subject:E-mailタイトル
  * rtw_message:E-mail本文
- * rtw_mail_type:メールタイプ(0:テキスト,1:HTML)
  */
 
 function rtw_activate() {
@@ -45,7 +44,7 @@ function rtw_activate() {
     $email     = get_bloginfo('admin_email');
     $subject   = "Remember the WordPress!!";
     $message   = "Blogの更新が滞っているようです。サイトの更新をお願いします。";
-    $mail_type = 0;
+    $log_mode  = 0;
 
     if(!get_option('rtw_initialized') || get_option('rtw_initialized') !== $time) {
         update_option('rtw_initialized',$time);
@@ -62,8 +61,8 @@ function rtw_activate() {
     if(!get_option('rtw_message')) {
         update_option('rtw_message',$message);
     }
-    if(!get_option('rtw_mail_type')) {
-        update_option('rtw_mail_type', $mail_type);
+    if(!get_option('rtw_mail_log')) {
+        update_option('rtw_mail_log',$log_mode);
     }
     wp_schedule_event($time + RTW_UNIXTIME_PER_DAY, 'daily', 'rtw_cron');
 }
@@ -95,9 +94,10 @@ function rtw_compare_time(){
         $mailbody = get_option('rtw_message');
         $to_email = get_option('rtw_email');
 
-        mb_send_mail($to_email,$subject,$mailbody);
+        _send_mail($to_email, $subject, $mailbody);
     }
 }
+
 add_action('rtw_cron', 'rtw_compare_time');
 
 /* When New Post or Edited Post.
@@ -118,6 +118,7 @@ function rtw_deactivate() {
     delete_option('rtw_message');
     delete_option('rtw_subject');
     delete_option('rtw_email');
+    delete_option('rtw_mail_log');
 }
 register_deactivation_hook(__FILE__, 'rtw_deactivate');
 
