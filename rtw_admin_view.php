@@ -58,9 +58,17 @@ if($posted === TRUE AND $rtw_error === FALSE):?>
                             <label for="email">送信先E-mailアドレス<label>
                         </th>
                         <td>
-                            <input name="email" type="text" id="email" value="<?php echo htmlspecialchars(get_option('rtw_email'), ENT_QUOTES,
- $blog_charset); ?>" class="regular-text code" /><br />
+                            <input name="email" type="text" id="email" value="<?php echo esc_html(get_option('rtw_email')); ?>" class="regular-text code" /><br />
                     アラートメールの送信先E-mailアドレスを入力してください。
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">
+                            <label for="terms">メールタイプ<label>
+                        </th>
+                        <td>
+                            <textarea name='message' id='message' cols='50' rows='10'><?php echo esc_html(get_option('rtw_message')); ?></textarea><br />
+                    送信メッセージの「内容」を入力してください。
                         </td>
                     </tr>
                     <tr valign="top">
@@ -68,7 +76,7 @@ if($posted === TRUE AND $rtw_error === FALSE):?>
                             <label for="terms">メールタイトル<label>
                         </th>
                         <td>
-                            <input name="subject" type="text" id="subject" value="<?php echo htmlspecialchars(get_option('rtw_subject'), ENT_QUOTES, $blog_charset); ?>" class="regular-text code" /><br />
+                            <input name="subject" type="text" id="subject" value="<?php echo esc_html(get_option('rtw_subject')); ?>" class="regular-text code" /><br />
                     送信メッセージの「タイトル」を入力してください。
                         </td>
                     </tr>
@@ -77,7 +85,7 @@ if($posted === TRUE AND $rtw_error === FALSE):?>
                             <label for="terms">メール本文<label>
                         </th>
                         <td>
-                            <textarea name='message' id='message' cols='50' rows='10'><?php echo htmlspecialchars(get_option('rtw_message'), ENT_QUOTES, $blog_charset); ?></textarea><br />
+                            <textarea name='message' id='message' cols='50' rows='10'><?php echo esc_html(get_option('rtw_message'), ENT_QUOTES, $blog_charset); ?></textarea><br />
                     送信メッセージの「内容」を入力してください。
                         </td>
                     </tr>
