@@ -9,11 +9,13 @@ require 'qdmail.1.2.6b/qdmail.php';
 
 class RtwMail{
 
-    public  $log_path;
+    public  $log_path, $log_mode;
     private $to, $from, $type;
 
     public function __construct($to, $from, $type = 'text') {
         $this->log_path  = 'mail.log';
+        $this->log_mode  = 0;
+
         $this->to        = $this->_explodeTo($to);
         $this->from      = $from;
         $this->type      = $type; 
@@ -29,10 +31,10 @@ class RtwMail{
     }
 
     private function _explodeTo($to) {
-        if(preg_match('@/n@u', $to_email)) {
-            return explode('/n', $to_email);
+        if(preg_match('@/n@u', $to)) {
+            return explode('/n', $to);
         }else{
-            return $email;
+            return $to;
         }
     }
 
@@ -42,14 +44,14 @@ class RtwMail{
         
         if(count($this->to) > 1) {
             foreach($this->to as $to) {
-                if($qd->easyHtml($to, $subject, $body)) {
+                if($qd->easyHtml($to, $subject, $body, $this->from)) {
                     $this->logMessage('Send Text Email: ' . $to);
                 }else{
                     $this->logMessage('Fail Text Email: ' . $to);
                 }
             }
         }else{
-            if($qd->easyText($to, $subject, $body)) {
+            if($qd->easyText($to, $subject, $body, $this->from)) {
                 $this->logMessage('Send Text Email: ' . $to);
             }else{
                 $this->logMessage('Fail Text Email: ' . $to);
@@ -62,14 +64,14 @@ class RtwMail{
         
         if(count($this->to) > 1) {
             foreach($this->to as $to) {
-                if($qd->easyText($to, $subject, $body)) {
+                if($qd->easyText($to, $subject, $body, $this->from)) {
                     $this->logMessage('Send Text Email: ' . $to);
                 }else{
                     $this->logMessage('Fail Text Email: ' . $to);
                 }
             }
         }else{
-            if($qd->easyText($to, $subject, $body)) {
+            if($qd->easyText($to, $subject, $body, $this->from)) {
                 $this->logMessage('Send Text Email: ' . $to);
             }else{
                 $this->logMessage('Fail Text Email: ' . $to);
@@ -80,7 +82,7 @@ class RtwMail{
     private function logMessage($message) {
         $dest = $this->log_path;
         if($this->log_mode) {
-            error_log($message, 3, $dest);
+            error_log($message . "\n", 3, $dest);
             return;
         }
     }   
